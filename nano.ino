@@ -1,38 +1,42 @@
-const int analogPin = A5;
-const int threshold = 532;  // ≈ 2.6V
+const uint8_t sensePin = 6;        // D6 digital input
+const uint8_t ledPin   = 13;       // Indicator LED
+const unsigned long debounce = 50; // milliseconds
+
 // false = OFF, true = ON
-bool prevState = false;
-bool curState = false;
+bool lastStableState = false;
+bool lastRawState    = false;
+unsigned long lastChangeTime = 0;
 
 void setup() {
-  pinMode(13, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(sensePin, INPUT); 
   Serial.begin(115200); // Start Serial Connection
 
-  // Startup Chime!
-  digitalWrite(13, HIGH); delay(500); digitalWrite(13, LOW);
+  // Startup Chime! [onboard LED]
+  digitalWrite(ledPin, HIGH); delay(500); digitalWrite(ledPin, LOW);
   for (int i = 0; i < 10; i++) {
     delay(20); digitalWrite(13, HIGH); delay(50); digitalWrite(13, LOW);
   }
-  delay(500); digitalWrite(13, HIGH); delay(200); digitalWrite(13, LOW);
+  delay(500); digitalWrite(13, HIGH); delay(100); digitalWrite(13, LOW);
 
   Serial.println("HI"); // Initial message
 }
 
 void loop() {
-  int adcValue = analogRead(analogPin);
+  bool rawState = digitalRead(sensePin);
+  unsigned long now = millis();
 
-  curState = (adcValue >= threshold); 
-
-  if (curState != prevState) {
-    if (curState) {
-      digitalWrite(13, HIGH);
-      Serial.println("ON");
-    } else {
-      digitalWrite(13, LOW);
-      Serial.println("OFF");
-    }
-    prevState = curState;
+  if (rawState != lastRawState) {
+    lastChangeTime = now;
+    lastRawState = rawState;
   }
 
-  delay(1000);
+  if ((now - lastChangeTime) >= debounce) {
+    if (lastStableState != rawState) {
+      lastStableState = rawState;
+
+      digitalWrite(ledPin, lastStableState ? HIGH : LOW);
+      Serial.println(lastStableState ? "ON" : "OFF");
+    }
+  }
 }
