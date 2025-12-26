@@ -1,21 +1,23 @@
 [Unit]
-Description=Arduino Nano Powercut Listener
-After=dev-serial-by\x2did-usb\x2d1a86.device
-Wants=dev-serial-by\x2did-usb\x2d1a86.device
+Description=Current Pochino - Arduino Nano Powercut Listener
+Requires=dev-ttyUSB0.device
+After=dev-ttyUSB0.device
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/local/bin/arduino_listener.py
+ExecStart=/usr/bin/python3 /usr/local/bin/pochino_listener.py
 Restart=on-failure
-RestartSec=15
+RestartSec=5
+RestartPreventExitStatus=67
 
 KillSignal=SIGINT
 TimeoutStopSec=5
 
-User=ilam
+User=you!!
 Group=dialout
 
 Environment=PYTHONUNBUFFERED=1
+Environment=ARDUINO_SERIAL_PATH=/dev/ttyUSB0
 
 NoNewPrivileges=true
 PrivateTmp=true

@@ -1,29 +1,39 @@
-const uint8_t sensePin = 6;        // D6 digital input
-const uint8_t ledPin   = 13;       // Indicator LED
-const unsigned long debounce = 50; // milliseconds
+const uint8_t SENSE_PIN = 6; // D6 digital input
+const uint8_t LED_INDICATE   = LED_BUILTIN; // Indicator LED
+const unsigned long DEBOUNCE = 50;          // milliseconds
 
 // false = OFF, true = ON
 bool lastStableState = false;
 bool lastRawState    = false;
 unsigned long lastChangeTime = 0;
 
+void startup_chime() {
+  digitalWrite(LED_BUILTIN, HIGH); delay(500); digitalWrite(LED_BUILTIN, LOW);
+  for (int i = 0; i < 10; i++) {
+    delay(20); digitalWrite(LED_BUILTIN, HIGH); delay(50); digitalWrite(LED_BUILTIN, LOW);
+  }
+  delay(500); digitalWrite(LED_BUILTIN, HIGH); delay(100); digitalWrite(LED_BUILTIN, LOW);
+}
+
 void setup() {
-  pinMode(ledPin, OUTPUT);
-  pinMode(sensePin, INPUT); 
+  pinMode(LED_INDICATE, OUTPUT);
+  pinMode(SENSE_PIN, INPUT); 
   Serial.begin(115200); // Start Serial Connection
 
-  // Startup Chime! [onboard LED]
-  digitalWrite(ledPin, HIGH); delay(500); digitalWrite(ledPin, LOW);
-  for (int i = 0; i < 10; i++) {
-    delay(20); digitalWrite(13, HIGH); delay(50); digitalWrite(13, LOW);
-  }
-  delay(500); digitalWrite(13, HIGH); delay(100); digitalWrite(13, LOW);
+  startup_chime();
+
+  // Initialize state
+  bool initial = digitalRead(SENSE_PIN);
+  lastRawState    = initial;
+  lastStableState = initial;
+
+  digitalWrite(LED_INDICATE, initial ? HIGH : LOW);
 
   Serial.println("HI"); // Initial message
 }
 
 void loop() {
-  bool rawState = digitalRead(sensePin);
+  bool rawState = digitalRead(SENSE_PIN);
   unsigned long now = millis();
 
   if (rawState != lastRawState) {
@@ -31,11 +41,11 @@ void loop() {
     lastRawState = rawState;
   }
 
-  if ((now - lastChangeTime) >= debounce) {
+  if ((now - lastChangeTime) >= DEBOUNCE) {
     if (lastStableState != rawState) {
       lastStableState = rawState;
 
-      digitalWrite(ledPin, lastStableState ? HIGH : LOW);
+      digitalWrite(LED_INDICATE, lastStableState ? HIGH : LOW);
       Serial.println(lastStableState ? "ON" : "OFF");
     }
   }
