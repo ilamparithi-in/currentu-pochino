@@ -1,3 +1,6 @@
+// MIT License - see LICENSE file for details.
+// Copyright (c) 2025 Ilamparithi Murali
+
 const uint8_t SENSE_PIN = 6; // D6 digital input
 const uint8_t LED_INDICATE   = LED_BUILTIN; // Indicator LED
 const unsigned long DEBOUNCE = 50;          // milliseconds

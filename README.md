@@ -29,7 +29,9 @@ Upload `nano.ino` to your Arduino board beforehand using the Arduino IDE or `avr
 
 ### Circuit of my setup
 
-I have an old Samsung charger which I use to power the input pin. If power goes out, the charger loses power and stops powering the input pin (though as I have observed, it practically does *not* power down instantly! this is due to there being charged capacitors in the charger's internal circuitry. It took around 30 seconds to discharge to the point that the voltage becomes less than the ATmega328P's Input HIGH level VIH > 0.6Vcc or approximately 3V).
+I have an old Samsung charger which I use to power the input pin. If power goes out, the charger loses power and stops powering the input pin, which makes the Arduino inform the serial port about the loss of power.
+
+Though as I have observed, it practically does *not* power down instantly! This is due to there being charged capacitors in the charger's internal circuitry (which I have no reference of). It took around 30 seconds to discharge into a 1kohm resistor, to the point that the voltage becomes less than the ATmega328P's Input HIGH level (VIH < 0.6Vcc or approximately 3V), which is sufficient for my use case because I have a UPS. For faster power dissipation, I'd have to use a smaller resistance, but all the resistors I have are rated for 0.25W power dissipation so I'd have to split the small resistance across multiple resistors.
 
 ![My setup on the breadboard](circuit_breadboard.jpeg)
 
@@ -54,8 +56,8 @@ KiCad schematic coming soon! (do you really want it?)
 Clone the repository:
 
 ```bash
-git clone https://github.com/ilamparithi-in/current-pochino
-cd current-pochino
+git clone https://github.com/ilamparithi-in/currentu-pochino
+cd currentu-pochino/src
 ```
 
 and create `on.sh` and `off.sh` in the repo directory:
@@ -89,7 +91,7 @@ Alternatively, you can edit the python listener script to modify the actions per
 ### Step 3: Clone the repo and Run Installation Script
 
 ```bash
-# current working directory: current-pochino/
+# current working directory: currentu-pochino/
 sudo ./setup.sh
 ```
 

@@ -1,3 +1,7 @@
+#!/bin/bash
+# MIT License - see LICENSE file for details.
+# Copyright (c) 2025 Ilamparithi Murali
+
 retry_prompt() {
     echo "Let's retry this shall we?"
     echo "Press Ctrl+C to quit anytime"

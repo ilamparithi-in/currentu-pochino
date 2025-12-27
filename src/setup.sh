@@ -1,4 +1,7 @@
 #!/bin/bash
+# MIT License - see LICENSE file for details.
+# Copyright (c) 2025 Ilamparithi Murali
+
 set -euo pipefail
 
 ## Arguments!!
