@@ -25,6 +25,7 @@ def exit_with_error(message: str, code: int) -> None:
     print(f"Error: {message}", file=sys.stderr)
     sys.exit(code)
 
+initialized = False
 
 while True:
     try:
@@ -55,7 +56,10 @@ while True:
             - "HI": Serial Connection Initialised message
             """
             if line == "ON":
-                subprocess.run([ON_SCRIPT])
+                if not initialized:
+                    initialized = True
+                else:
+                    subprocess.run([ON_SCRIPT])
             elif line == "OFF":
                 subprocess.run([OFF_SCRIPT])
             elif line == "HI":

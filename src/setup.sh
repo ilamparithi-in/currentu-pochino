@@ -64,9 +64,9 @@ install -m 755 $LISTENER_FILE /usr/local/bin/pochino_listener.py
 
 if [[ -f $ON_SCRIPT || -f $OFF_SCRIPT ]]; then
     echo "Installing action scripts..."
-    install -d -m 755 /usr/local/lib/currentu-pochino
-    [[ -f $ON_SCRIPT ]] && install -m 754 $ON_SCRIPT  /usr/local/lib/currentu-pochino/on.sh
-    [[ -f $OFF_SCRIPT ]] && install -m 754 $OFF_SCRIPT /usr/local/lib/currentu-pochino/off.sh
+    install -o "$(logname)" -g "$(logname)" -d -m 755 /usr/local/lib/currentu-pochino
+    [[ -f $ON_SCRIPT ]] && install -o "$(logname)" -g "$(logname)" -m 754 $ON_SCRIPT  /usr/local/lib/currentu-pochino/on.sh
+    [[ -f $OFF_SCRIPT ]] && install -o "$(logname)" -g "$(logname)" -m 754 $OFF_SCRIPT /usr/local/lib/currentu-pochino/off.sh
 fi
 
 INSTALL_SERVICE="N"
@@ -76,7 +76,8 @@ if [[ "$INSTALL_SERVICE" == "n" || "$INSTALL_SERVICE" == "N" ]]; then
 else
     echo "Installing systemd service..."
 
-    DEVICE_UNIT=$(systemd-escape -p --suffix=device "$SERIAL_PATH")
+    UNESCAPED_DEVICE_UNIT=$(systemd-escape -p --suffix=device "$SERIAL_PATH")
+    DEVICE_UNIT=${UNESCAPED_DEVICE_UNIT//\\/\\\\}
     TMP_UNIT=$(mktemp)
     sed -e "s|^Requires=.*|Requires=$DEVICE_UNIT|" \
         -e "s|^After=.*|After=$DEVICE_UNIT|" \
